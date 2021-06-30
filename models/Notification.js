@@ -22,8 +22,8 @@ const notificationSchema = new mongoose.Schema({
         default:Date.now
     },
     notificationTime:{
-        type:VarDate,
-        default:VarDate.now
+        type:String,
+        required:true
     }
 });
 

@@ -26,17 +26,18 @@ router.post('/register', async (req, res) => {
         name: req.body.name,
         email: req.body.email,
         password: hashPassword,
-        imageUrl:req.imageUrl
+        imageUrl:req.body.imageUrl
     });
     try {
         const savedUser = await user.save();
-        const jwt = jwt.sign({user_id: user._id}, process.env["TOKEN_SECRET "]);
-        res.header(jwt).send(jwt)
-            .send({
-                uid: user._id,
-                name: savedUser.name,
-                email: savedUser.email
-            });
+        const payload = {
+            name:savedUser._id,
+            email:savedUser.email,
+            imageUrl:savedUser.imageUrl,
+            date:savedUser.date
+        };
+        const token = jwt.sign({user_id: savedUser._id}, process.env.TOKEN_SECRET);
+        res.status(200).header('auth-token',token).json(payload).send(payload);
     } catch (err) {
         res.status(400).send(err);
     }
@@ -57,13 +58,14 @@ router.post('/login', async (req, res) => {
     if (!validPassword) return res.status(400).send('Invalid credentials');
 
     //Create and assign token
-    const token = jwt.sign({_id: user._id}, process.env.TOKEN_SECRET);
-    res.header('auth-token', token).send(token)
-        .send({
-            name:user._id,
-            email:user.email,
-            imageUrl:user.imageUrl
-        });
+    const token = jwt.sign({user_id: user._id}, process.env.TOKEN_SECRET);
+    const payload = {
+        name:user._id,
+        email:user.email,
+        imageUrl:user.imageUrl,
+        date:user.date
+    };
+    res.status(200).header('auth-token', token).json(payload).send(payload);
 });
 
 module.exports = router;

@@ -5,7 +5,7 @@ const {mongo} = require('mongoose');
 
 router.get('/:uid',verify,async (req,res)=>{
     const uid = req.param.id;
-    const myNotifications = await mongo.findById(uid);
+    const myNotifications = await mongo.findOne({_id:uid});
     res.status(200).json(myNotifications).send(myNotifications);
 });
 router.post('/',verify,async (req,res)=>{
@@ -26,3 +26,5 @@ router.post('/',verify,async (req,res)=>{
         res.status(400).send(e);
     }
 });
+
+module.exports = router;
